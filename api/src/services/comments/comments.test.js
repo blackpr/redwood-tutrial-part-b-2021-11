@@ -1,4 +1,4 @@
-import { comments, createComment } from './comments'
+import { comments, createComment, deleteComment } from './comments'
 
 describe('comments', () => {
   scenario(
@@ -23,5 +23,17 @@ describe('comments', () => {
     expect(comment.body).toEqual('What is your favorite tree bark?')
     expect(comment.postId).toEqual(scenario.post.bark.id)
     expect(comment.createdAt).not.toEqual(null)
+  })
+
+  scenario('deletes a comment', async (scenario) => {
+    mockCurrentUser({ roles: ['moderator'] })
+
+    const comment = await deleteComment({
+      id: scenario.comment.jane.id,
+    })
+    expect(comment.id).toEqual(scenario.comment.jane.id)
+
+    const result = await comments({ postId: scenario.comment.jane.id })
+    expect(result.length).toEqual(0)
   })
 })
